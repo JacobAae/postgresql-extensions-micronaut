@@ -1,0 +1,5 @@
+profile: service
+defaultPackage: postgresql.extensions.micronaut
+---
+testFramework: spock
+sourceLanguage: groovy
