@@ -1,0 +1,7 @@
+= README
+
+== Quick usage for demo
+
+curl localhost:8080/storage
+
+curl localhost:8080/storage -X POST -H 'content-type: application/json' -d '{"job":"Job 1", "history": {"date":"2019-05-26", "activity":"Fun stuff", "price": 12}, "favoriteNumbers": [2, 3, 5, 7], "testAttributes": {"foo":"bar","baz":"rab"} }'
