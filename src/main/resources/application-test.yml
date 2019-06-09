@@ -1,0 +1,6 @@
+hibernate:
+  dialect: net.kaleidos.hibernate.PostgresqlExtensionsDialect
+dataSource:
+  pooled: true
+  jmxExport: true
+  driverClassName: org.postgresql.Driver

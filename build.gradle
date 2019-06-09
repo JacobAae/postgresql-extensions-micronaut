@@ -43,7 +43,11 @@ dependencies {
     }
     testCompile "io.micronaut:micronaut-inject-groovy"
     testCompile "io.micronaut.test:micronaut-test-spock"
-    
+
+    testCompile 'org.testcontainers:testcontainers:1.11.3'
+    testCompile 'org.testcontainers:spock:1.11.3'
+    testCompile 'org.testcontainers:postgresql:1.11.3'
+
 }
 
 test.classpath += configurations.developmentOnly

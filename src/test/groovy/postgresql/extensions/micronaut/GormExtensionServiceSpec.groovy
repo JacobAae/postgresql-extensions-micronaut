@@ -1,11 +1,7 @@
 package postgresql.extensions.micronaut
 
 import io.micronaut.context.ApplicationContext
-import io.micronaut.http.HttpRequest
 import io.micronaut.runtime.server.EmbeddedServer
-import io.micronaut.http.client.RxHttpClient
-import io.micronaut.http.HttpResponse
-import io.micronaut.http.HttpStatus
 import org.testcontainers.containers.DockerComposeContainer
 import org.testcontainers.spock.Testcontainers
 import spock.lang.AutoCleanup
@@ -13,11 +9,7 @@ import spock.lang.Shared
 import spock.lang.Specification
 
 @Testcontainers
-class StorageControllerSpec extends Specification {
-
-    @AutoCleanup
-    @Shared
-    RxHttpClient client
+class GormExtensionServiceSpec extends Specification {
 
     @Shared
     DockerComposeContainer dockerComposeContainer =
@@ -26,6 +18,12 @@ class StorageControllerSpec extends Specification {
 
     @Shared @AutoCleanup
     EmbeddedServer embeddedServer
+
+    @Shared
+    GormStorageService gormStorageService
+
+    @Shared
+    GormExtensionsService gormExtensionsService
 
     void setupSpec() {
         String host = dockerComposeContainer.getServiceHost("database", 5432)
@@ -42,36 +40,27 @@ class StorageControllerSpec extends Specification {
                         'postgresql.extensions.micronaut'
                 )
                 .run(EmbeddedServer)
-        client = embeddedServer.applicationContext.createBean(RxHttpClient, embeddedServer.getURL())
+        gormExtensionsService = embeddedServer.applicationContext.getBean(GormExtensionsService)
+        gormStorageService = embeddedServer.applicationContext.getBean(GormStorageService)
+    }
 
-        GormStorageObject object = new GormStorageObject(
+
+    void "test save and filteringByAttributes"() {
+        setup:
+        gormStorageService.save(new GormStorageObject(
                 job: 'irrelevant',
                 history: [date: '2019-05-26', activity:'Speakers dinner'],
                 favoriteNumbers: [1,2,3],
                 testAttributes: [happy:'path',funny:'yes']
-        )
+        ))
 
-        HttpRequest request = HttpRequest.POST("/storage", object)
-        HttpResponse response = client.toBlocking().exchange(request, Map)
-    }
-
-    void "test index"() {
-        given:
-        HttpResponse response = client.toBlocking().exchange("/storage")
-
-        expect:
-        response.status == HttpStatus.OK
-    }
-
-    void "test filterByNumbers"() {
         when:
-        def result = client.toBlocking().retrieve(HttpRequest.GET('/storage/numbers?numbers=2&numbers=3'), List)
-
-        println result
+        List<GormStorageObject> result = gormExtensionsService.filterByAttributes('happy')
 
         then:
-        result
         result.size() == 1
-        result.first().favoriteNumbers == [1,2,3]
+        result.first().testAttributes.happy == 'path'
     }
+
+
 }
