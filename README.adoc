@@ -1,5 +1,11 @@
 = README
 
+== Intro
+
+This is a demo project for displaying how GORM PostgreSQL extensions originally made for Grails can also be used in Micronaut.
+
+Blog post is avaliable on https://grydeske.dk/news/gorm-postgres-extensions-micronaut.html
+
 == Quick usage for demo
 
 curl localhost:8080/storage
